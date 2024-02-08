@@ -3,12 +3,10 @@
 package main
 
 import (
-	"bufio"
 	"fmt"
 	"log"
 	"os"
 	"os/exec"
-	"strings"
 
 	"github.com/robfig/cron/v3"
 )
@@ -38,41 +36,30 @@ func main() {
 }
 
 func loadEnv() error {
-	envFile := ".env"
-	file, err := os.Open(envFile)
-	if err != nil {
-		return err
-	}
-	defer file.Close()
-
-	scanner := bufio.NewScanner(file)
-	for scanner.Scan() {
-		line := scanner.Text()
-		parts := strings.SplitN(line, "=", 2)
-		if len(parts) == 2 {
-			os.Setenv(parts[0], parts[1])
-		}
+	envPath := os.Getenv("ENV_PATH")
+	fmt.Println("ENV_PATH:", envPath)
+	if envPath == "" {
+		return fmt.Errorf("A variável de ambiente ENV_PATH não foi definida.")
 	}
 
-	if err := scanner.Err(); err != nil {
-		return err
-	}
+	// Exemplo de como você pode obter variáveis específicas do ambiente
+	os.Setenv("APP_PATH", os.Getenv("APP_PATH"))
+	os.Setenv("CRONTAB", os.Getenv("CRONTAB"))
+	os.Setenv("GIT_TOKEN_USER", os.Getenv("GIT_TOKEN_USER"))
+	os.Setenv("GIT_USER", os.Getenv("GIT_USER"))
+	os.Setenv("BRANCH", os.Getenv("BRANCH"))
 
 	return nil
 }
 
 func executeScript() error {
-
 	scriptContent := `
-	ENV_FILE=".env"
-	if [ -f "$ENV_FILE" ]; then
-  		while IFS= read -r line; do
-    	export "$line"
-  	done < "$ENV_FILE"
-	else
-  		echo "Arquivo .env não encontrado."
-  		exit 1
-	fi
+	#!/bin/bash
+	PWD="$ENV_PATH"
+	echo PWD: $PWD
+	ENV_FILE="$PWD/.env"
+	echo ENV_FILE: $ENV_FILE
+	# Remova as linhas que leem do arquivo .env, pois agora as variáveis estão diretamente no ambiente
 
 	if [ ! -d "$APP_PATH" ]; then
   		echo "O diretório do aplicativo não existe: $APP_PATH"
