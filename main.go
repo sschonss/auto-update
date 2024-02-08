@@ -87,6 +87,13 @@ func executeScript() error {
 	echo "https://$GIT_USER:$GIT_TOKEN_USER@github.com" > "$HOME/.git-credentials"
 
 	git pull origin $BRANCH
+
+	# Verifica se há mudanças no repositório antes de executar npm run build
+	if git diff --quiet; then
+  		echo "Não há mudanças no repositório. npm run build não será executado."
+	else
+  		./vendor/bin/sail npm run build
+	fi
 `
 
 	cmd := exec.Command("/bin/bash", "-c", scriptContent)
