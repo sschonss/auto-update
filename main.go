@@ -42,7 +42,6 @@ func loadEnv() error {
 		return fmt.Errorf("A variável de ambiente ENV_PATH não foi definida.")
 	}
 
-	// Exemplo de como você pode obter variáveis específicas do ambiente
 	os.Setenv("APP_PATH", os.Getenv("APP_PATH"))
 	os.Setenv("CRONTAB", os.Getenv("CRONTAB"))
 	os.Setenv("GIT_TOKEN_USER", os.Getenv("GIT_TOKEN_USER"))
@@ -59,8 +58,7 @@ func executeScript() error {
 	echo PWD: $PWD
 	ENV_FILE="$PWD/.env"
 	echo ENV_FILE: $ENV_FILE
-	# Remova as linhas que leem do arquivo .env, pois agora as variáveis estão diretamente no ambiente
-
+	
 	if [ ! -d "$APP_PATH" ]; then
   		echo "O diretório do aplicativo não existe: $APP_PATH"
   		exit 1
@@ -75,7 +73,6 @@ func executeScript() error {
 
 	git pull origin $BRANCH
 
-	# Verifica se há mudanças no repositório antes de executar npm run build
 	if git diff --quiet; then
   		echo "Não há mudanças no repositório. npm run build não será executado."
 	else
